@@ -1,8 +1,7 @@
-    ---
-    layout: page
-    title: "about"
-    permalink: /about/
-    ---
+---
+layout: page
+title: About
+permalink: /about/
+---
 
-    ### This is a jekyll page
-    I'm trying to figure out how it works, there will be content here later.
+{% remote_include https://raw.githubusercontent.com/fflori4n/fflori4n/refs/heads/main/README.md %}

@@ -1,3 +1,48 @@
-theme: jekyll-theme-minimal
-title: fflori4n.com landing
-description: Bookmark this to keep an eye on my project updates!
+title: fFlori4n's maker blog
+author: fFlori4n
+email: fflori4n@gmail.com
+description: > # this means to ignore newlines until "twitter_username:"
+  This is my sort of blog related to personal projects.
+  The most consistent thing for my projects is that they are all poorly documented - so I am trying to change that now.
+  I already paid good money for this domain so might as well have a blog/website on it.
+
+# social links
+# twitter_username: jekyllrb
+github_username:  fflori4n
+# rss: rss
+# dribbble_username: jekyll
+# facebook_username: jekyll
+# flickr_username: jekyll
+# instagram_username: jekyll
+# linkedin_username: jekyll
+# pinterest_username: jekyll
+# youtube_username: jekyll
+# googleplus_username: +jekyll
+
+# Mastodon instances
+# mastodon:
+# - username: jekyll
+#   instance: example.com
+# - username: jekyll2
+#   instance: example.com
+
+
+show_excerpts: true # set to true to show excerpts on the homepage
+
+# Minima date format
+# refer to http://shopify.github.io/liquid/filters/date/ if you want to customize this
+minima:
+  date_format: "%b %-d, %Y"
+
+# If you want to link only specific pages in your header, uncomment
+# this and add the path to the pages in order as they should show up
+#header_pages:
+# - about.html
+
+# Build settings
+theme: minima
+
+plugins:
+ - jekyll-feed
+ - jekyll-seo-tag
+ - jekyll-remote-include

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-04T00:33:52+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">fFlori4n’s maker blog</title><subtitle>This is my sort of blog related to personal projects. The most consistent thing for my projects is that they are all poorly documented - so I am trying to change that now. I already paid good money for this domain so might as well have a blog/website on it.
+</subtitle><author><name>fFlori4n</name></author><entry><title type="html">nod3-comfirm - Common firmware for ESP32 based devices</title><link href="http://localhost:4000/2025/08/03/nod3-comfirm.html" rel="alternate" type="text/html" title="nod3-comfirm - Common firmware for ESP32 based devices" /><published>2025-08-03T00:00:00+02:00</published><updated>2025-08-03T00:00:00+02:00</updated><id>http://localhost:4000/2025/08/03/nod3-comfirm</id><content type="html" xml:base="http://localhost:4000/2025/08/03/nod3-comfirm.html"><![CDATA[<p><strong>nod3-comfirm</strong> - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3.
+Using ESP_IDF and modern(ish) C++ ( <em>to avoid the usual cowboy enthics of C projects ~ though it is less efficient</em> ), nod3-comfirm aims to be used as a basic firmware for smart sensor devices. Firmware has basic functions that are needed for every IoT thing, like:</p>
+<ul>
+  <li>Network management (WLAN)</li>
+  <li>IO Control</li>
+  <li>ADC continous/ DMA and other ADC functions</li>
+  <li>Time keeping, NTP and RTC functions</li>
+  <li>Websocket communication with Homeassistant custom component</li>
+  <li>libraries for common sensors using I2C</li>
+</ul>
+
+<p><strong>nod3</strong> can be modified to taylor it to the specific project, add support for new sensors, or other application specific functions.</p>
+
+<p>404: Not Found</p>]]></content><author><name>fFlori4n</name></author><summary type="html"><![CDATA[nod3-comfirm - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3. Using ESP_IDF and modern(ish) C++ ( to avoid the usual cowboy enthics of C projects ~ though it is less efficient ), nod3-comfirm aims to be used as a basic firmware for smart sensor devices. Firmware has basic functions that are needed for every IoT thing, like: Network management (WLAN) IO Control ADC continous/ DMA and other ADC functions Time keeping, NTP and RTC functions Websocket communication with Homeassistant custom component libraries for common sensors using I2C]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/image_1.jpg" /><media:content medium="image" url="http://localhost:4000/assets/images/image_1.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Plant detection for agricultural drone using OpenCV computer vision</title><link href="http://localhost:4000/2023/02/10/plant-mass-detection.html" rel="alternate" type="text/html" title="Plant detection for agricultural drone using OpenCV computer vision" /><published>2023-02-10T00:00:00+01:00</published><updated>2023-02-10T00:00:00+01:00</updated><id>http://localhost:4000/2023/02/10/plant-mass-detection</id><content type="html" xml:base="http://localhost:4000/2023/02/10/plant-mass-detection.html"><![CDATA[<p>R&amp;D project in collaboration with Drontech (<a href="https://www.facebook.com/dronteh">Drontech Facebook page</a>) to develop a proof of concept for a device that uses computer vision to estimate plant mass beneath a drone.
+A GPIO pin is set to HIGH when plant mass exceeds a defined threshold, the signal is intended to control sprayer valves, turning off pesticide flow when the area under the flight path lacks viable cultivation or the plants have dried out, avoiding unnecessary pesticide use on unproductive areas.</p>
+
+<p><img src="https://github.com/fflori4n/fflori4n/raw/main/assets/pics/droneWGreenLed.png" alt="drone with cam device under it" style="width: 42.5%; height:auto;" /></p>
+
+<p><em>This is a picture of the “flight article” rpi, it can be seen fixed at the bottom of the drone, the camera is looking forward-down. yes, rpi is getting absolutely blasted by ground obstacle radar which is probably not good for the pi or the radar</em></p>
+
+<h4 id="timeline">Timeline</h4>
+
+<p>Developement was done in two stages:</p>
+<ul>
+  <li>first a CV algorith was created in python OpenCV based on recorded video footage. The clasification of plants is based only on color and noise/texture. - using YOLO V4 for weed classification was considered but abbadoned due to the limited hardware capabilities, and because it was only a proof of concept.</li>
+  <li>after that the computer vision algorithm was rewritten in OpenCV C++ to allow real time processing.</li>
+</ul>
+
+<h4 id="cv-algorithm">CV algorithm</h4>
+
+<p><img src="https://github.com/fflori4n/fflori4n/raw/main/assets/pics/drone_plant_detect.gif" alt="gif plant detect" style="width: 100%; height:auto;" /></p>
+
+<p>This gif shows the testing of the algorithm. I cycle through multiple sources of footage previously collected by the drone, and looking at the highlighted plants - then tune the parameters or the algorithm and repeat.
+This part of the developement uses python, because it is flexible and easy to change - but it is in no way real time, or running on actual hardware, that comes later.</p>
+
+<p>The algorithm works based on pixel colors, and texture roughness. Basically this is the simplest way to detect plants, but simple is good because the algorithm will be run on a RPI4. This is not a great solution  because it depends on lighting conditions to a degree - harshe sunlight/ shadows can mess up the detector and blind the camera.</p>
+
+<p>Segmentation based on color sounds simple, and it is, but it takes a lot of fiddleing with the parameters to get it to work.</p>
+
+<p>Actually the detection uses a few steps:</p>
+<ul>
+  <li>drop the resolution, resize with closest interpolation and also reduce the color depth - because of processing limitations.</li>
+  <li>transform it using 4D matrixes (image transform matrixes? I forget what they’re called), so the image represents a top down view of the area in front of the camera - this is why some videos on the gif are funnel shaped</li>
+  <li>convert to CSV</li>
+  <li>create “light intensity/ saturation too low/ too high” mask - obviously if camera sees only black or white thats probably not plants. If the image is washed out, saturation is low - we can not tell the difference between colors, so ignore that aswell.</li>
+  <li>create “brown mask” - this will detect dirt, later will be used as a negative mask</li>
+  <li>create “green mask” - the actual plants.</li>
+  <li>combine all masks to get only the green positive pixels</li>
+  <li>filter out small groupings of green-positive pixels (this is done by resizing to small, then back to large mat using CV function, found this is faster then convulution/kernel based filters)</li>
+</ul>
+
+<h4 id="the-flight-hardware">The “flight hardware”</h4>
+
+<p><img src="https://github.com/fflori4n/fflori4n/raw/main/assets/pics/rpiDroneCam.jpg" alt="gif plant detect" style="width: 66%; height:auto;" />
+<img src="https://github.com/fflori4n/fflori4n/raw/main/assets/pics/rpiFlying.png" alt="gif plant detect" style="width: 66%; height:auto;" /></p>
+
+<p>The algorithm runs on a Raspberry Pi 4 using OpenCV C++ for real-time frame processing. Due to limited processing power the frame rate is relatively low (around 15 FPS).
+For testing purposes, a green LED was connected to the GPIO output - <em>the one green dot seen on the picture with the drone</em> - (the status of the output is sent also via WiFi telemetry) - and the drone flown over roads, bare land and different kinds of crops and roadside weeds.</p>
+
+<p>Overall performance was okay, but the functions were very limited. This system can not tell the difference between weeds and regular plants.</p>
+
+<h4 id="in-conclusion">In conclusion</h4>
+
+<p>A better system could use some kind of tenserflow + YOLO + (external hardware CV accelerator) to perform plant classification, and get the actual area and exact location of the weeds.
+Actually, this guy on youtube build something very similar to that idea: 
+<a href="https://www.youtube.com/watch?v=Fflbc_y2IGQ"> https://www.youtube.com/@nathanbuildsdiy </a></p>
+<ul>
+  <li>it is still not realtime, but still this is next level stuff for a hobby project. Worth the watch you will be very impressed. ** Also the weed burning magnifying glass robot is awesome **</li>
+</ul>
+
+<p>Also I was very dissapointed with the lack of developer access to the drone’s software - it exists on paper, but very hard to get, and expensive - ideally, the drone would provide an API to get the camera feed, GPS location, speed or a way to turn on/off the pump - and the processing could be done remotely on some beefy laptop, right now the drone needs to carry additional weight and it needs to be modified to allow switching of the sprayers - this could be entirely a software feature if the manufacturer opened a developer API to the drone. This drone was from one of the most famous chinese drone makers (<em>if you know you know</em>), but sadly I expect other manufacturers to not be any better in this aspect.</p>
+
+<p>So ultimately weed detection and selective spraying will probably be implemented by the manufacturer of the drone at some point - but still this was a fun project to work on.</p>]]></content><author><name>fFlori4n</name></author><summary type="html"><![CDATA[R&amp;D project in collaboration with Drontech (Drontech Facebook page) to develop a proof of concept for a device that uses computer vision to estimate plant mass beneath a drone. A GPIO pin is set to HIGH when plant mass exceeds a defined threshold, the signal is intended to control sprayer valves, turning off pesticide flow when the area under the flight path lacks viable cultivation or the plants have dried out, avoiding unnecessary pesticide use on unproductive areas.]]></summary></entry></feed>
