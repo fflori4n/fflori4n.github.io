@@ -17,4 +17,7 @@ Using ESP_IDF and modern(ish) C++ ( *to avoid the usual cowboy enthics of C proj
 
 **nod3** can be modified to taylor it to the specific project, add support for new sensors, or other application specific functions.
 
+<img src="http://192.168.0.199:3000/d/detfu7jht6r5sb/hive-scale-test?orgId=1&viewPanel=1">
+
+
 {% remote_include https://raw.githubusercontent.com/fflori4n/nod3-comfirm/refs/heads/main/README.md %}

@@ -95,6 +95,7 @@ DEPENDENCIES
   bundler (>= 1.15)
   jekyll-remote-include!
   minima!
+  webrick (~> 1.9)
 
 BUNDLED WITH
    2.7.1
