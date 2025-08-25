@@ -10,14 +10,14 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="This is my sort of blog related to personal projects. The most consistent thing for my projects is that they are all poorly documented - so I am trying to change that now. I already paid good money for this domain so might as well have a blog/website on it." />
 <meta property="og:description" content="This is my sort of blog related to personal projects. The most consistent thing for my projects is that they are all poorly documented - so I am trying to change that now. I already paid good money for this domain so might as well have a blog/website on it." />
-<link rel="canonical" href="http://localhost:4000/404.html" />
-<meta property="og:url" content="http://localhost:4000/404.html" />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
 <meta property="og:site_name" content="fFlori4n’s maker blog" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="fFlori4n’s maker blog" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"fFlori4n"},"description":"This is my sort of blog related to personal projects. The most consistent thing for my projects is that they are all poorly documented - so I am trying to change that now. I already paid good money for this domain so might as well have a blog/website on it.","headline":"fFlori4n’s maker blog","url":"http://localhost:4000/404.html"}</script>
+{"@context":"https://schema.org","@type":"WebSite","author":{"@type":"Person","name":"fFlori4n"},"description":"This is my sort of blog related to personal projects. The most consistent thing for my projects is that they are all poorly documented - so I am trying to change that now. I already paid good money for this domain so might as well have a blog/website on it.","headline":"fFlori4n’s maker blog","name":"fFlori4n’s maker blog","url":"http://localhost:4000/"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="fFlori4n&apos;s maker blog" /></head>
 <body><header class="site-header" role="banner">
@@ -37,26 +37,35 @@
 </header>
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <style type="text/css" media="screen">
-  .container {
-    margin: 10px auto;
-    max-width: 600px;
-    text-align: center;
-  }
-  h1 {
-    margin: 30px 0;
-    font-size: 4em;
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-</style>
-
-<div class="container">
-  <h1>404</h1>
-
-  <p><strong>Page not found :(</strong></p>
-  <p>The requested page could not be found.</p>
-</div>
+        <div class="home">
+<h2 class="post-list-heading">Posts</h2>
+    <ul class="post-list"><li><img src="/assets/images/image_1.jpg" alt="" class="featured-image-post-list"><h3>
+          <a class="post-link" href="/2025/08/03/nod3-comfirm.html">
+            nod3-comfirm - Common firmware for ESP32 based devices
+          </a>
+        </h3>
+        <span class="post-meta">Aug 3, 2025</span><p><strong>nod3-comfirm</strong> - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3.
+Using ESP_IDF and modern(ish) C++ ( <em>to avoid the usual cowboy enthics of C projects ~ though it is less efficient</em> ), nod3-comfirm aims to be used as a basic firmware for smart sensor devices. Firmware has basic functions that are needed for every IoT thing, like:</p>
+<ul>
+  <li>Network management (WLAN)</li>
+  <li>IO Control</li>
+  <li>ADC continous/ DMA and other ADC functions</li>
+  <li>Time keeping, NTP and RTC functions</li>
+  <li>Websocket communication with Homeassistant custom component</li>
+  <li>libraries for common sensors using I2C</li>
+</ul>
+<button onclick="window.location.href='/2025/08/03/nod3-comfirm.html';">Read more</button>
+        </br></br>
+      </li><li><img src="https://github.com/fflori4n/fflori4n/raw/main/assets/pics/drone_plant_detect.gif" alt="" class="featured-image-post-list-wide"><h3>
+          <a class="post-link" href="/2023/02/10/plant-mass-detection.html">
+            Plant detection for agricultural drone using OpenCV computer vision
+          </a>
+        </h3>
+        <span class="post-meta">Feb 10, 2023</span><p>R&amp;D project in collaboration with Drontech (<a href="https://www.facebook.com/dronteh">Drontech Facebook page</a>) to develop a proof of concept for a device that uses computer vision to estimate plant mass beneath a drone.
+A GPIO pin is set to HIGH when plant mass exceeds a defined threshold, the signal is intended to control sprayer valves, turning off pesticide flow when the area under the flight path lacks viable cultivation or the plants have dried out, avoiding unnecessary pesticide use on unproductive areas.</p>
+<button onclick="window.location.href='/2023/02/10/plant-mass-detection.html';">Read more</button>
+        </br></br>
+      </li></ul></div>
 
       </div>
     </main><footer class="site-footer h-card">
