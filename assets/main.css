@@ -85,11 +85,11 @@ h1, h2, h3, h4, h5, h6 {
  * Links
  */
 a {
-  color: #2a7ae2;
+  color: #1a1a1a;
   text-decoration: none;
 }
 a:visited {
-  color: rgb(22.9483471074, 86.2541322314, 168.5516528926);
+  color: black;
 }
 a:hover {
   color: #111;
@@ -146,6 +146,7 @@ pre > code {
  * Wrapper
  */
 .wrapper {
+  color: rgb(39, 39, 39);
   max-width: -webkit-calc(800px - (30px * 2));
   max-width: calc(800px - 30px * 2);
   margin-right: auto;
@@ -217,6 +218,7 @@ table td {
  * Site header
  */
 .site-header {
+  background-color: #1a1a1a;
   border-top: 5px solid rgb(66.25, 66.25, 66.25);
   border-bottom: 1px solid #e8e8e8;
   min-height: 55.95px;
@@ -235,6 +237,15 @@ table td {
   color: rgb(66.25, 66.25, 66.25);
 }
 
+.site-banner-image {
+  letter-spacing: -1px;
+  margin-bottom: 0;
+  float: left;
+  height: auto;
+  width: auto;
+  transform: scale(0.8);
+}
+
 .site-nav {
   float: right;
   line-height: 54px;
@@ -246,7 +257,7 @@ table td {
   display: none;
 }
 .site-nav .page-link {
-  color: #111;
+  color: #bcbcbc;
   line-height: 1.5;
 }
 .site-nav .page-link:not(:last-child) {
