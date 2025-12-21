@@ -3,8 +3,10 @@ layout: post
 title: Prosthetic hand - 3d printed partial prosthetic
 image: /assets/images/post-prosthetic-hand/prostetic-hand-v08.jpg
 github-link: http://github.com/AleksaHeler/OpenHand
+displink: OpenHand github repo
 show_excerpts: true
 show_wide_feature_image: true
+tags: Open-Hand Robotics Position-Feedback
 ---
 This is an RnD project, working with a team of three other engineers. Our goal is to develop a prototype for a partial hand prosthetic that can be 3D printed and built with basic hobbyist level parts. This design unlike other prosthetics, is a partial prosthetic, meaning it is worn on the wrist, and tries to replicate the function of the four 'axial' fingers - the main mechanical constraint is space as all mechanisms need to clear the hand and the thumb. A custom PCB with an STM chip is responsible for controlling the motors, with force and positioning feedback.
 

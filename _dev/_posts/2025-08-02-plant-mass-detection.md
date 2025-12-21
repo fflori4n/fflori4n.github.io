@@ -5,6 +5,7 @@ remote-image: https://github.com/fflori4n/fflori4n/raw/main/assets/pics/drone_pl
 date: 2023-02-10
 show_excerpts: true
 show_wide_feature_image: true
+tags: OPEN-CV Precision-agriculture Raspberry-Pi Computer-Vision
 ---
 
 R&D project in collaboration with Drontech ([Drontech Facebook page](https://www.facebook.com/dronteh)) to develop a proof of concept for a device that uses computer vision to estimate plant mass beneath a drone.

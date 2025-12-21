@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-09-07T03:39:02+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">fFlori4n’s projects</title><subtitle>This is my sort of blog related to personal projects. The most consistent thing for my projects is that they are all poorly documented - so I am trying to change that now. I already paid good money for this domain so might as well have a blog/website on it.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-12-21T16:32:23+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">fFlori4n’s projects</title><subtitle>This is my sort of blog related to personal projects. The most consistent thing for my projects is that they are all poorly documented - so I am trying to change that now. I already paid good money for this domain so might as well have a blog/website on it.
 </subtitle><author><name>fFlori4n</name></author><entry><title type="html">nod3-comfirm - Common firmware for ESP32 based devices</title><link href="http://localhost:4000/2025/08/03/nod3-comfirm.html" rel="alternate" type="text/html" title="nod3-comfirm - Common firmware for ESP32 based devices" /><published>2025-08-03T00:00:00+02:00</published><updated>2025-08-03T00:00:00+02:00</updated><id>http://localhost:4000/2025/08/03/nod3-comfirm</id><content type="html" xml:base="http://localhost:4000/2025/08/03/nod3-comfirm.html"><![CDATA[<p><strong>nod3-comfirm</strong> - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3.
 Using ESP_IDF and modern(ish) C++ ( <em>to avoid the usual cowboy enthics of C projects ~ though it is less efficient</em> ), nod3-comfirm aims to be used as a basic firmware for smart sensor devices. Firmware has basic functions that are needed for every IoT thing, like:</p>
 <ul>
@@ -14,7 +14,67 @@ Using ESP_IDF and modern(ish) C++ ( <em>to avoid the usual cowboy enthics of C p
 
 <p><img src="http://192.168.0.199:3000/d/detfu7jht6r5sb/hive-scale-test?orgId=1&amp;viewPanel=1" /></p>
 
-<p>404: Not Found</p>]]></content><author><name>fFlori4n</name></author><summary type="html"><![CDATA[nod3-comfirm - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3. Using ESP_IDF and modern(ish) C++ ( to avoid the usual cowboy enthics of C projects ~ though it is less efficient ), nod3-comfirm aims to be used as a basic firmware for smart sensor devices. Firmware has basic functions that are needed for every IoT thing, like: Network management (WLAN) IO Control ADC continous/ DMA and other ADC functions Time keeping, NTP and RTC functions Websocket communication with Homeassistant custom component libraries for common sensors using I2C]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/image_1.jpg" /><media:content medium="image" url="http://localhost:4000/assets/images/image_1.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Prosthetic hand - 3d printed partial prosthetic</title><link href="http://localhost:4000/2025/01/20/prosthetic-hand.html" rel="alternate" type="text/html" title="Prosthetic hand - 3d printed partial prosthetic" /><published>2025-01-20T00:00:00+01:00</published><updated>2025-01-20T00:00:00+01:00</updated><id>http://localhost:4000/2025/01/20/prosthetic-hand</id><content type="html" xml:base="http://localhost:4000/2025/01/20/prosthetic-hand.html"><![CDATA[<p>This is an RnD project, working with a team of three other engineers. Our goal is to develop a prototype for a partial hand prosthetic that can be 3D printed and built with basic hobbyist level parts. This design unlike other prosthetics, is a partial prosthetic, meaning it is worn on the wrist, and tries to replicate the function of the four ‘axial’ fingers - the main mechanical constraint is space as all mechanisms need to clear the hand and the thumb. A custom PCB with an STM chip is responsible for controlling the motors, with force and positioning feedback.</p>
+<p>| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 | Linux |
+| —————– | —– | ——– | ——– | ——– | ——– | ——— | ——– | ——– | ——– | ——– | —– |</p>
+
+<h1 id="hello-world-example">Hello World Example</h1>
+
+<p>Starts a FreeRTOS task to print “Hello World”.</p>
+
+<p>(See the README.md file in the upper level ‘examples’ directory for more information about examples.)</p>
+
+<h2 id="how-to-use-example">How to use example</h2>
+
+<p>Follow detailed instructions provided specifically for this example.</p>
+
+<p>Select the instructions depending on Espressif chip installed on your development board:</p>
+
+<ul>
+  <li><a href="https://docs.espressif.com/projects/esp-idf/en/stable/get-started/index.html">ESP32 Getting Started Guide</a></li>
+  <li><a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html">ESP32-S2 Getting Started Guide</a></li>
+</ul>
+
+<h2 id="example-folder-contents">Example folder contents</h2>
+
+<p>The project <strong>hello_world</strong> contains one source file in C language <a href="main/hello_world_main.c">hello_world_main.c</a>. The file is located in folder <a href="main">main</a>.</p>
+
+<p>ESP-IDF projects are built using CMake. The project build configuration is contained in <code class="language-plaintext highlighter-rouge">CMakeLists.txt</code> files that provide set of directives and instructions describing the project’s source files and targets (executable, library, or both).</p>
+
+<p>Below is short explanation of remaining files in the project folder.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>├── CMakeLists.txt
+├── pytest_hello_world.py      Python script used for automated testing
+├── main
+│   ├── CMakeLists.txt
+│   └── hello_world_main.c
+└── README.md                  This is the file you are currently reading
+</code></pre></div></div>
+
+<p>For more information on structure and contents of ESP-IDF projects, please refer to Section <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html">Build System</a> of the ESP-IDF Programming Guide.</p>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<ul>
+  <li>
+    <p>Program upload failure</p>
+
+    <ul>
+      <li>Hardware connection is not correct: run <code class="language-plaintext highlighter-rouge">idf.py -p PORT monitor</code>, and reboot your board to see if there are any output logs.</li>
+      <li>The baud rate for downloading is too high: lower your baud rate in the <code class="language-plaintext highlighter-rouge">menuconfig</code> menu, and try again.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="technical-support-and-feedback">Technical support and feedback</h2>
+
+<p>Please use the following feedback channels:</p>
+
+<ul>
+  <li>For technical queries, go to the <a href="https://esp32.com/">esp32.com</a> forum</li>
+  <li>For a feature request or bug report, create a <a href="https://github.com/espressif/esp-idf/issues">GitHub issue</a></li>
+</ul>
+
+<p>We will get back to you as soon as possible.</p>]]></content><author><name>fFlori4n</name></author><category term="ESP-IDF" /><category term="ESP32-C3" /><category term="C++" /><category term="IoT" /><summary type="html"><![CDATA[nod3-comfirm - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3. Using ESP_IDF and modern(ish) C++ ( to avoid the usual cowboy enthics of C projects ~ though it is less efficient ), nod3-comfirm aims to be used as a basic firmware for smart sensor devices. Firmware has basic functions that are needed for every IoT thing, like: Network management (WLAN) IO Control ADC continous/ DMA and other ADC functions Time keeping, NTP and RTC functions Websocket communication with Homeassistant custom component libraries for common sensors using I2C]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/image_1.jpg" /><media:content medium="image" url="http://localhost:4000/assets/images/image_1.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Prosthetic hand - 3d printed partial prosthetic</title><link href="http://localhost:4000/2025/01/20/prosthetic-hand.html" rel="alternate" type="text/html" title="Prosthetic hand - 3d printed partial prosthetic" /><published>2025-01-20T00:00:00+01:00</published><updated>2025-01-20T00:00:00+01:00</updated><id>http://localhost:4000/2025/01/20/prosthetic-hand</id><content type="html" xml:base="http://localhost:4000/2025/01/20/prosthetic-hand.html"><![CDATA[<p>This is an RnD project, working with a team of three other engineers. Our goal is to develop a prototype for a partial hand prosthetic that can be 3D printed and built with basic hobbyist level parts. This design unlike other prosthetics, is a partial prosthetic, meaning it is worn on the wrist, and tries to replicate the function of the four ‘axial’ fingers - the main mechanical constraint is space as all mechanisms need to clear the hand and the thumb. A custom PCB with an STM chip is responsible for controlling the motors, with force and positioning feedback.</p>
 
 <p>The project details can be read in the git repo: <a href="http://github.com/AleksaHeler/OpenHand"> http://github.com/AleksaHeler/OpenHand </a> , there is a lot of stuff, and I mean <strong>a lot</strong>, definitely worth the read.</p>
 
@@ -79,7 +139,7 @@ Our assumption is that these motors could be custom made easily and cheaply, the
 <p><img src="https://github.com/fflori4n/fflori4n/raw/main/assets/pics/linear_motor.png" alt="" style="width: 100%; height:auto;" /></p>
 
 <p>The modifications to the motor (and the internals of these linear motors) are shared on grabcad:
-<a href="https://grabcad.com/library/geared-motor-with-encoder-for-linear-actuator-1"> https://grabcad.com/library/geared-motor-with-encoder-for-linear-actuator-1 </a></p>]]></content><author><name>fFlori4n</name></author><summary type="html"><![CDATA[This is an RnD project, working with a team of three other engineers. Our goal is to develop a prototype for a partial hand prosthetic that can be 3D printed and built with basic hobbyist level parts. This design unlike other prosthetics, is a partial prosthetic, meaning it is worn on the wrist, and tries to replicate the function of the four ‘axial’ fingers - the main mechanical constraint is space as all mechanisms need to clear the hand and the thumb. A custom PCB with an STM chip is responsible for controlling the motors, with force and positioning feedback.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/post-prosthetic-hand/prostetic-hand-v08.jpg" /><media:content medium="image" url="http://localhost:4000/assets/images/post-prosthetic-hand/prostetic-hand-v08.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Plant detection for agricultural drone using OpenCV computer vision</title><link href="http://localhost:4000/2023/02/10/plant-mass-detection.html" rel="alternate" type="text/html" title="Plant detection for agricultural drone using OpenCV computer vision" /><published>2023-02-10T00:00:00+01:00</published><updated>2023-02-10T00:00:00+01:00</updated><id>http://localhost:4000/2023/02/10/plant-mass-detection</id><content type="html" xml:base="http://localhost:4000/2023/02/10/plant-mass-detection.html"><![CDATA[<p>R&amp;D project in collaboration with Drontech (<a href="https://www.facebook.com/dronteh">Drontech Facebook page</a>) to develop a proof of concept for a device that uses computer vision to estimate plant mass beneath a drone.
+<a href="https://grabcad.com/library/geared-motor-with-encoder-for-linear-actuator-1"> https://grabcad.com/library/geared-motor-with-encoder-for-linear-actuator-1 </a></p>]]></content><author><name>fFlori4n</name></author><category term="Open-Hand" /><category term="Robotics" /><category term="Position-Feedback" /><summary type="html"><![CDATA[This is an RnD project, working with a team of three other engineers. Our goal is to develop a prototype for a partial hand prosthetic that can be 3D printed and built with basic hobbyist level parts. This design unlike other prosthetics, is a partial prosthetic, meaning it is worn on the wrist, and tries to replicate the function of the four ‘axial’ fingers - the main mechanical constraint is space as all mechanisms need to clear the hand and the thumb. A custom PCB with an STM chip is responsible for controlling the motors, with force and positioning feedback.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/post-prosthetic-hand/prostetic-hand-v08.jpg" /><media:content medium="image" url="http://localhost:4000/assets/images/post-prosthetic-hand/prostetic-hand-v08.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Plant detection for agricultural drone using OpenCV computer vision</title><link href="http://localhost:4000/2023/02/10/plant-mass-detection.html" rel="alternate" type="text/html" title="Plant detection for agricultural drone using OpenCV computer vision" /><published>2023-02-10T00:00:00+01:00</published><updated>2023-02-10T00:00:00+01:00</updated><id>http://localhost:4000/2023/02/10/plant-mass-detection</id><content type="html" xml:base="http://localhost:4000/2023/02/10/plant-mass-detection.html"><![CDATA[<p>R&amp;D project in collaboration with Drontech (<a href="https://www.facebook.com/dronteh">Drontech Facebook page</a>) to develop a proof of concept for a device that uses computer vision to estimate plant mass beneath a drone.
 A GPIO pin is set to HIGH when plant mass exceeds a defined threshold, the signal is intended to control sprayer valves, turning off pesticide flow when the area under the flight path lacks viable cultivation or the plants have dried out, avoiding unnecessary pesticide use on unproductive areas.</p>
 
 <p><img src="https://github.com/fflori4n/fflori4n/raw/main/assets/pics/droneWGreenLed.png" alt="drone with cam device under it" style="width: 42.5%; height:auto;" /></p>
@@ -138,4 +198,4 @@ Actually, this guy on youtube build something very similar to that idea:
 
 <p>Also I was very dissapointed with the lack of developer access to the drone’s software - it exists on paper, but very hard to get, and expensive - ideally, the drone would provide an API to get the camera feed, GPS location, speed or a way to turn on/off the pump - and the processing could be done remotely on some beefy laptop, right now the drone needs to carry additional weight and it needs to be modified to allow switching of the sprayers - this could be entirely a software feature if the manufacturer opened a developer API to the drone. This drone was from one of the most famous chinese drone makers (<em>if you know you know</em>), but sadly I expect other manufacturers to not be any better in this aspect.</p>
 
-<p>So ultimately weed detection and selective spraying will probably be implemented by the manufacturer of the drone at some point - but still this was a fun project to work on.</p>]]></content><author><name>fFlori4n</name></author><summary type="html"><![CDATA[R&amp;D project in collaboration with Drontech (Drontech Facebook page) to develop a proof of concept for a device that uses computer vision to estimate plant mass beneath a drone. A GPIO pin is set to HIGH when plant mass exceeds a defined threshold, the signal is intended to control sprayer valves, turning off pesticide flow when the area under the flight path lacks viable cultivation or the plants have dried out, avoiding unnecessary pesticide use on unproductive areas.]]></summary></entry></feed>
+<p>So ultimately weed detection and selective spraying will probably be implemented by the manufacturer of the drone at some point - but still this was a fun project to work on.</p>]]></content><author><name>fFlori4n</name></author><category term="OPEN-CV" /><category term="Precision-agriculture" /><category term="Raspberry-Pi" /><category term="Computer-Vision" /><summary type="html"><![CDATA[R&amp;D project in collaboration with Drontech (Drontech Facebook page) to develop a proof of concept for a device that uses computer vision to estimate plant mass beneath a drone. A GPIO pin is set to HIGH when plant mass exceeds a defined threshold, the signal is intended to control sprayer valves, turning off pesticide flow when the area under the flight path lacks viable cultivation or the plants have dried out, avoiding unnecessary pesticide use on unproductive areas.]]></summary></entry></feed>

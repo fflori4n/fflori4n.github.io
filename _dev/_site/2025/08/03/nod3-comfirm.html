@@ -24,21 +24,26 @@
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="fFlori4n&apos;s projects" /></head>
 <body><header class="site-header" role="banner">
+  <div class="header-wrapper">
 
-  <div class="wrapper"><!-- <a class="site-title" rel="author" href="/">fFlori4n&#39;s projects</a> -->
-    <a class="site-title" rel="author" href="/"><img src="/assets/images/page_banner2.png", class="site-banner-image"></a><nav class="site-nav">
-        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-        <label for="nav-trigger">
-          <span class="menu-icon">
-            <svg viewBox="0 0 18 15" width="18px" height="15px">
-              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
-            </svg>
-          </span>
-        </label>
+    <!-- Simple text logo -->
+    <a class="site-title site-logo" rel="author" href="/">
+      <img src="/assets/images/f_fflori4n2.png" style="width:20%"></img>
+    </a><nav class="site-nav">
 
-        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+        <!-- Mobile menu toggle -->
+        <input type="checkbox" id="nav-trigger" class="nav-trigger nav-toggle" />
+        <label for="nav-trigger" class="menu-icon">&#9776;</label>
+
+        <!-- Navigation links -->
+        <div class="nav-links"><a class="page-link" href="/about/">
+                About
+              </a><a class="page-link" href="/gallery/">
+                Gallery
+              </a></div>
       </nav></div>
 </header>
+
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
@@ -49,7 +54,7 @@
       </time></p>
       
       <p class="post-meta">
-        <a href="http://github.com/fflori4n/nod3-comfirm">http://github.com/fflori4n/nod3-comfirm</a>
+        <a class="card-link" href="http://github.com/fflori4n/nod3-comfirm">http://github.com/fflori4n/nod3-comfirm</a>
       </p>
   </header>
 
@@ -69,7 +74,67 @@ Using ESP_IDF and modern(ish) C++ ( <em>to avoid the usual cowboy enthics of C p
 
 <p><img src="http://192.168.0.199:3000/d/detfu7jht6r5sb/hive-scale-test?orgId=1&amp;viewPanel=1" /></p>
 
-<p>404: Not Found</p>
+<p>| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 | Linux |
+| —————– | —– | ——– | ——– | ——– | ——– | ——— | ——– | ——– | ——– | ——– | —– |</p>
+
+<h1 id="hello-world-example">Hello World Example</h1>
+
+<p>Starts a FreeRTOS task to print “Hello World”.</p>
+
+<p>(See the README.md file in the upper level ‘examples’ directory for more information about examples.)</p>
+
+<h2 id="how-to-use-example">How to use example</h2>
+
+<p>Follow detailed instructions provided specifically for this example.</p>
+
+<p>Select the instructions depending on Espressif chip installed on your development board:</p>
+
+<ul>
+  <li><a href="https://docs.espressif.com/projects/esp-idf/en/stable/get-started/index.html">ESP32 Getting Started Guide</a></li>
+  <li><a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html">ESP32-S2 Getting Started Guide</a></li>
+</ul>
+
+<h2 id="example-folder-contents">Example folder contents</h2>
+
+<p>The project <strong>hello_world</strong> contains one source file in C language <a href="main/hello_world_main.c">hello_world_main.c</a>. The file is located in folder <a href="main">main</a>.</p>
+
+<p>ESP-IDF projects are built using CMake. The project build configuration is contained in <code class="language-plaintext highlighter-rouge">CMakeLists.txt</code> files that provide set of directives and instructions describing the project’s source files and targets (executable, library, or both).</p>
+
+<p>Below is short explanation of remaining files in the project folder.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>├── CMakeLists.txt
+├── pytest_hello_world.py      Python script used for automated testing
+├── main
+│   ├── CMakeLists.txt
+│   └── hello_world_main.c
+└── README.md                  This is the file you are currently reading
+</code></pre></div></div>
+
+<p>For more information on structure and contents of ESP-IDF projects, please refer to Section <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html">Build System</a> of the ESP-IDF Programming Guide.</p>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<ul>
+  <li>
+    <p>Program upload failure</p>
+
+    <ul>
+      <li>Hardware connection is not correct: run <code class="language-plaintext highlighter-rouge">idf.py -p PORT monitor</code>, and reboot your board to see if there are any output logs.</li>
+      <li>The baud rate for downloading is too high: lower your baud rate in the <code class="language-plaintext highlighter-rouge">menuconfig</code> menu, and try again.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="technical-support-and-feedback">Technical support and feedback</h2>
+
+<p>Please use the following feedback channels:</p>
+
+<ul>
+  <li>For technical queries, go to the <a href="https://esp32.com/">esp32.com</a> forum</li>
+  <li>For a feature request or bug report, create a <a href="https://github.com/espressif/esp-idf/issues">GitHub issue</a></li>
+</ul>
+
+<p>We will get back to you as soon as possible.</p>
 
   </div><a class="u-url" href="/2025/08/03/nod3-comfirm.html" hidden></a>
 </article>

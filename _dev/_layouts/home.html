@@ -1,8 +1,8 @@
 ---
 layout: default
 ---
-
 <div class="home">
+
   {%- if page.title -%}
     <h3 class="page-heading">{{ page.title }}</h3>
   {%- endif -%}
@@ -13,7 +13,7 @@ layout: default
     <h2 class="post-list-heading">{{ page.list_title | default: "Posts" }}</h2>
     <ul class="post-list">
       {%- for post in site.posts -%}
-      <li>
+      <!-- <li>
         {%- if post.show_wide_feature_image -%}
           {%- if post.image -%}
             <img src="{{ post.image | relative_url }}" alt="" class="featured-image-post-list-wide">
@@ -39,6 +39,69 @@ layout: default
         {%- endif -%}
         <button onclick="window.location.href='{{ post.url | relative_url }}';">Read more</button>
         </br></br>
+      </li> -->
+      <li class="post-card">
+
+        <!-- Determine image -->
+        {% assign image_url = nil %}
+        {% if post.image %}
+          {% assign image_url = post.image | relative_url %}
+        {% elsif post.remote-image %}
+          {% assign image_url = post.remote-image %}
+        {% endif %}
+      
+        <!-- Image link wrapper -->
+        <a href="{{ post.url | relative_url }}" class="post-image-link">
+          <div class="post-image-wrapper">
+      
+            <img 
+              src="{{ image_url }}" 
+              alt="{{ post.title | escape }}"
+              class="{% if post.show_wide_feature_image %}post-image-wide{% else %}post-image-normal{% endif %}"
+            >
+      
+            <!-- Overlay block (title + tags) -->
+            <div class="post-overlay-block">
+
+              {% if post.tags %}
+              <div class="overlay-tags">
+                {% for tag in post.tags %}
+                  <div class="overlay-chip">{{ tag }}</div>
+                {% endfor %}
+              </div>
+              {% endif %}
+              
+              <!-- Title -->
+              <div class="overlay-title">
+                {{ post.title | escape }}
+              </div>
+            </div>
+      
+          </div>
+        </a>
+      
+        <!-- Text BELOW the image -->
+        <div class="post-info">
+      
+          <div class = meta-link-row>
+            {% assign date_format = site.minima.date_format | default: "%b %-d, %Y" %}
+            <span class="post-meta">{{ post.date | date: date_format }}</span>
+            {% if post.displink %}
+            <span class="post-meta"><a class="card-link" href="{{ post.github-link | escape }}">{{ post.displink | escape }}</a></span>
+            {% endif %}
+      
+          </div>
+          
+          {% if site.show_excerpts %}
+            <div class="post-excerpt">
+              {{ post.excerpt }}
+            </div>
+          {% endif %}
+
+          <button class="post-readmore-btn" onclick="window.location.href='{{ post.url | relative_url }}';">Read more</button>
+      
+        </div>
+      
       </li>
       {%- endfor -%}
     </ul>

@@ -4,6 +4,7 @@ title: nod3-comfirm - Common firmware for ESP32 based devices
 image: /assets/images/image_1.jpg
 github-link: http://github.com/fflori4n/nod3-comfirm
 show_excerpts: true
+tags: ESP-IDF ESP32-C3 C++ IoT
 ---
 
 **nod3-comfirm** - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3.
