@@ -208,10 +208,13 @@
 .post-meta {
   font-size: $small-font-size;
   color: #3d3d3d;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .post-link {
   display: block;
+  margin: 0.5rem;
   @include relative-font-size(1.8);
 }
 
@@ -267,7 +270,6 @@
   height: 8em;
   object-fit: cover;
   filter: brightness(80%);
-  padding-bottom: 0.5em;
 }
 
 .featured-image-post-list {
@@ -323,6 +325,17 @@ ul { padding: 0; }
 
 .post-image-wrapper:hover img {
   transform: 0.2s ease scale(1.05);
+}
+
+.post-article-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.post-article-image-wrapper img {
+  width: 100%;
+  object-fit: cover;
 }
 
 /* Image Heights */
@@ -420,7 +433,7 @@ ul { padding: 0; }
   padding: 0 0 0.5rem;
   border-radius: 4px;
   /* margin: 0 auto 2.5rem; */
-  max-width: 700px;
+  max-width: 1000px;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -711,4 +724,9 @@ footer a:hover {
     width: 100%;
     height: 100%;
     object-fit: cover; /* ensures same size & cropping */
+}
+
+.wide-body-article{
+    width: auto;
+    margin: 0.5rem;
 }

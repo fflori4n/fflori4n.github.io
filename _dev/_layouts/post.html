@@ -4,6 +4,8 @@ layout: default
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
+
+    <div class="post-article-image-wrapper">
     
     {%- if page.image -%}
       <img src="{{- page.image | relative_url -}}" alt="" class="featured-image-post">
@@ -11,6 +13,8 @@ layout: default
     {%- if page.remote-image -%}
       <img src="{{- page.remote-image -}}" alt="" class="featured-image-post">
     {%- endif -%}
+    </div>
+
     <b><h1 class="post-link p-name" itemprop="name headline">{{ page.title | escape }}</h1></b>
     <p class="post-meta">
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
@@ -26,9 +30,11 @@ layout: default
       </p>
   </header>
 
-  <div class="post-content e-content" itemprop="articleBody">
+  <!-- <div class="post-content e-content" itemprop="articleBody"> -->
+  <div class="wide-body-article">
     {{ content }}
   </div>
+  <!-- </div> -->
 
   {%- if site.disqus.shortname -%}
     {%- include disqus_comments.html -%}

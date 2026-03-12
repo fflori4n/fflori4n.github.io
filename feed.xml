@@ -1,5 +1,491 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-12-21T16:32:23+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">fFlori4n’s projects</title><subtitle>This is my sort of blog related to personal projects. The most consistent thing for my projects is that they are all poorly documented - so I am trying to change that now. I already paid good money for this domain so might as well have a blog/website on it.
-</subtitle><author><name>fFlori4n</name></author><entry><title type="html">nod3-comfirm - Common firmware for ESP32 based devices</title><link href="http://localhost:4000/2025/08/03/nod3-comfirm.html" rel="alternate" type="text/html" title="nod3-comfirm - Common firmware for ESP32 based devices" /><published>2025-08-03T00:00:00+02:00</published><updated>2025-08-03T00:00:00+02:00</updated><id>http://localhost:4000/2025/08/03/nod3-comfirm</id><content type="html" xml:base="http://localhost:4000/2025/08/03/nod3-comfirm.html"><![CDATA[<p><strong>nod3-comfirm</strong> - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-03-12T23:55:23+01:00</updated><id>/feed.xml</id><title type="html">fFlori4n’s projects</title><subtitle>This is my sort of blog related to personal projects. The most consistent thing about my projects is that they are all poorly documented - so I am trying to change that now.
+</subtitle><author><name>fFlori4n</name></author><entry><title type="html">IoT Beehive</title><link href="/2026/02/20/iot-beehive.html" rel="alternate" type="text/html" title="IoT Beehive" /><published>2026-02-20T00:00:00+01:00</published><updated>2026-02-20T00:00:00+01:00</updated><id>/2026/02/20/iot-beehive</id><content type="html" xml:base="/2026/02/20/iot-beehive.html"><![CDATA[<p>Made for my master’s thesis, the purpose of this smart hive system is to collect sensor data from remote beehives. The system consists of multiple embedded devices.
+The system can function On-or Off grid, it can use 4G/LTE or WiFi to send data to a remote server. The sensors are monitoring temperature, humidity inside the hives, outside weather conditions, has a scale connected to measure hive weight (though this one is only a prototype to test the sensor), motion sensor and GPS position. These measurements provide information that can be monitored in real time by the beekeeper, or analyzed at a later date to evaluate environmental effects to the individual colonies of bees.</p>
+
+<blockquote>
+  <p>This is quick overview and some interesting details/notes, the post is intended to serve as inspiration for other people thinking of working on similar projects - I was experimenting with a lot of different things that were not used in the end, but are still interesting or might be useful for other projects.</p>
+</blockquote>
+
+<h2 id="quick-architectural-overview">Quick architectural overview</h2>
+
+<p>In practice the system looks like this scheme:</p>
+<blockquote>
+  <p>This architecture has a lot of complexity it is very hit or miss. There is a reason most such IOT devices use small battery powered sensors with minimal power consumption combined with modern protocols such as Lora-WAN or Bluetooth low energy (BLE).</p>
+</blockquote>
+
+<p><img src="/assets/images/post-iot-beehive/communication_paths.png" alt="" style="width: 80%; height:auto;" /></p>
+
+<h5 id="sketch-of-the-smart-hive-system-shows-the-individual-devices-needed-for-its-function"><em>Sketch of the smart hive system shows the individual devices needed for it’s function</em></h5>
+
+<ul>
+  <li>Sensor system consist of three types of devices:
+    <ul>
+      <li>Sensor dev.</li>
+      <li>Gateway dev.</li>
+      <li>Server</li>
+    </ul>
+  </li>
+  <li>Sensors are directly inserted into the hive boxes or placed near the the monitored bee colony.</li>
+  <li>Sensor readings are collected by the Sensor device (based on Atmega168 or Atmega328p depending on the number of sensors)</li>
+  <li>Sensor data is forwarded from Sensor dev to Gateway device via RS485 wired bus</li>
+  <li>Gateway device based on an ESP32-WROOM-32. Device’s tasks are:
+    <ul>
+      <li>Manage power - monitor solar power + battery, and to switch power to Sensor devices, control sleep and “low power” mode.</li>
+      <li>Poll Sensor devices - check if they are reachable and check their measurements.</li>
+      <li>Forward measurements to server - either via Wi-Fi or 4G/LTE mobile network (using SIM7000G chip)</li>
+      <li>Data is converted to JSON format and gets sent either via MQTT or Websocket (to Homeassistant backend or Mosquitto MQTT broker)</li>
+      <li>Monitor GPS location and MASL</li>
+      <li>Read some engineering values such as PCB temperature, electrical box temperature, signal strength of mobile network</li>
+    </ul>
+  </li>
+  <li>Server:
+    <ul>
+      <li>Takes and stores measurements, can display real-time or statistical data via smartphone or web interface.</li>
+      <li>Uses Docker env. running</li>
+      <li>Homeassistant and Grafana</li>
+      <li>Uses Homeassistant custom component to parse measurements and data sent over Websocket (a little bit like ESPNow, I think… I also tried MQTT and REST they work ok, websoc is just convenient for me because it is fast and can create new entities in HA based on the payload - a bit like MQTT discovery only <em>more simpler</em>)</li>
+      <li>Hosted on local machine uses <em>sophisticated</em> reverse tunnel scheme with a domain name to bypass CGNAT to be reachable from anywhere - <em>at least until Cloudflare decides to start asking for money…</em></li>
+    </ul>
+  </li>
+</ul>
+
+<blockquote>
+  <p>Some comments on this architecture and what I’d change the next time around:</p>
+  <ul>
+    <li>I’d recommend not using a dedicated Gateway device for most applications, sensor device should communicate with the server directly if possible.</li>
+    <li>The server side proved particularly convenient and flexible, Homeassistant is fantastic, finding info on writing Custom integrations was a challenge but HA-core is all python just waiting to be analyzed and reverse engineered, so I managed to figure it out after a bit.</li>
+    <li>I came to like Espressif’s dev-environment very much, the ESP series of chips are easy to use and well documented (unlike other chinese manufacturers the docs are almost as good as the gold standard TI or STM), ESP-IDF + vscode is all you need for something like this. This project used older chips, but the new series are getting very good at all things an IOT device would need, and there is good variation in pin count, power consumption and processing power - basically all versions use the same HAL and very similar hardware modules.</li>
+    <li>Mobile network can be good, but adds a lot of cost and could be redundant if the location has some other type of network, Wi-Fi Bluetooth or LoRa. You might find that most aviaries already have a 4G/LTE Wi-Fi router on site because they often have IP cameras or alarm systems to monitor the property.</li>
+  </ul>
+</blockquote>
+
+<h2 id="flexible-configuration---system-gets-adapted-to-the-specific-aviarys-needs">Flexible configuration - system gets adapted to the specific aviary’s needs</h2>
+
+<p>As described previously, system consists of multiple devices, it can have different types of sensors and different number of Sensor devices. It can be solar powered or AC/ mains powered. It can use mobile network or Wi-Fi to connect to the internet (or local network which has a server).It can use MQTT or Websocket to communicate with the server.</p>
+
+<p>To prove this capability, two different configurations were tested:
+<img src="/assets/images/post-iot-beehive/aviary_heler.png" alt="" style="width: 90%; height:auto;" />
+<img src="/assets/images/post-iot-beehive/aviary_solar_conf.png" alt="" style="width: 90%; height:auto;" /></p>
+
+<h5 id="two-configurations-of-the-smart-hive-system-were-tested-the-two-pictures-shown-a-sketch-of-each-configuration"><em>Two configurations of the smart hive system were tested, the two pictures shown a sketch of each configuration</em></h5>
+
+<h2 id="what-sensors-does-the-system-have---why-do-we-even-need-to-put-sensors-in-beehives">What sensors does the system have? - Why do we even need to put sensors in beehives?</h2>
+
+<p><img src="/assets/images/post-iot-beehive/IMG_20240911_171549_preview.jpeg" alt="" style="width: 80%; height:auto;" /></p>
+
+<h5 id="dht11-temperature-and-humidity-sensor-placed-inside-the-hive-box"><em>DHT11 temperature and humidity sensor placed inside the hive box</em></h5>
+
+<blockquote>
+  <p>This is an image of the DHT11 sensor placed inside the hive box, bees filled the sensor’s openings with propolis, this was new information for me… but it is actually a well known fact that bees will do this if the space is narrower than a so called <em><a href="https://en.wikipedia.org/wiki/Langstroth_hive#Bee_space">Bee space</a></em>. Interestingly it does not seem to effect the sensor readings in any significant way, maybe it does slow down the measured change in temperature or humidity?</p>
+</blockquote>
+
+<p>Even this basic system of sensors can bring in a fair bit of valuable data. There are a few ideas what this data can be used for, and why the this and similar projects are worth doing.
+There are a lot of possibilities but to keep the scope simple this system will only fucuses on the following tasks:</p>
+
+<p>A few key sensors inside and around the hive boxes allow the beekeeper to:</p>
+<ul>
+  <li>Detect extreme temperatures that need immediate action - Extreme temperatures can destroy a colony if unchecked. Bees expand a significant amount of energy to keep the hive temperature stable, this is energy that could be used to gather more honey.</li>
+  <li>Check that Hive box is sealed, no moisture or wind can get into it - Bees glue the box shut with propolis each time it is closed, this is part of the natural hive building process. Well regulated humidity and temperature also help to minimize the risk of pests.</li>
+  <li>Helps find an optimal position for the hive boxes, e.g. to check if dominant wind does not blow at the entrance, or how many hours (and which hours) of sunshine does each box get, if more thermal isolation is needed. Generally to see if conditions are stable. <code class="language-plaintext highlighter-rouge">TODO:</code> Compare two boxes painted different colors to see how it changes the temperature.</li>
+  <li>Motion sensors will detect wildlife or thief hanging around the hive boxes, and the GPS will make sure that the position of the hives is known at all times.</li>
+  <li>Measuring weight will show how a colony grows, or in winter how they use up the feed.</li>
+</ul>
+
+<p>Of course there is room for more sensors, e.g. Detecting pesticides, <a href="https://www.instructables.com/Honey-Bee-Counter-II/"><em>Bee counter gates</em></a>, Microphones or even Computer Vision enabled photo booths for measuring bees, estimating gathered pollen blobs and detecting deformities and sickness before it spreads, but that would require a much bigger development effort.</p>
+
+<p>Smart hive uses the following sensors to gather beehive data:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>SENSOR NAME</th>
+      <th>MEASURES</th>
+      <th>COMMENT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><em>Sensor device</em></strong></td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>DHT11/DHT22/AM2320</td>
+      <td>Temperature + Humidity</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>mmWawe or PIR</td>
+      <td>Motion detector</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>BH1750</td>
+      <td>Light intensity detector</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>BME280</td>
+      <td>Outside temperature, humidity and barometric pressure</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>HX711 based strain gauges</td>
+      <td>Weight</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong><em>Gateway device</em></strong></td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>DS18b20</td>
+      <td>Electrical box temperature</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>SIM7000G</td>
+      <td>GNSS/GPS Location, MASL, time</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="sensor-device">Sensor device</h2>
+
+<p><img src="/assets/images/post-iot-beehive/sensor_dev_with_sensors.jpg" alt="" style="width: 80%; height:auto;" /></p>
+
+<h5 id="this-picture-shows-sensors-together-with-the-sensor-device"><em>This picture shows sensors together with the Sensor device</em></h5>
+
+<p>Located next to the hive boxes, this device could be seen as a sort of smart sensor itself.
+Sensor device reads measurements from the connected sensors and it will later forward the measurements (to Gateway device) via RS485 bus - more precisely it will wait to get polled by the master device, the Gateway device, to which it will respond with it’s status and the measurement of it’s sensors.
+Sensor device can have different configurations, different types of connected sensors.</p>
+
+<p>Multiple sensor devices can be connected to the same RS485 bus, as they each have unique addresses they will respond to, though this is not a great solution because unlike more modern protocols such as CAN the frame arbitration is decided in the MCU software, SLAVE devices (Sensor devices) will keep their transceivers in receive mode, unless called upon by the MASTER - MASTER will send out a request that contains the ID of the specific Sensor device to which only the addressed slave will respond with the measurements. This proved to work reliably in the field, actually RS485 is very impressive with it’s tolerance to bad connections and noise, the setup used a cable length of around 80m between the Sensor devices (located next to the hive boxes) and the Gateway device without any issues.</p>
+
+<p>Why use wired connection? The thinking was:</p>
+<ul>
+  <li>Save on complexity by using a single battery to power all devices</li>
+  <li>Use an ultra low-tech and reliable protocol such as RS485 to get something that just works under any conditions, always without exception.</li>
+  <li>Gateway device to have a “hard reset” capability - can power cycle all sensors to reset them if something goes wrong and communication is lost.</li>
+</ul>
+
+<blockquote>
+  <p>These points were all achieved. But the good execution is still bad because the concept was bad from the start.
+Using wired connection to connect these devices was admittedly a bad ide because of other factors. There are more downsides to wires:</p>
+  <ul>
+    <li>More expensive - Need to buy cable, cable glands, connectors (in this case UTP cable with RJ45 connectors is used for both power and RS485, a little bit like with PoE)</li>
+    <li>More hassle to set up, someone will eventually cut (e.g. with a lawn mover or tractor), damage or steal the cable if it is a long run.</li>
+    <li><strong>Water</strong>, the biggest issue is waterproofing the enclosures. Each hole in the housing is potential place for water to enter and flood the Sensor dev - this happened more than I’d like to admit.</li>
+  </ul>
+</blockquote>
+
+<h2 id="gateway-device">Gateway device</h2>
+
+<p><img src="/assets/images/post-iot-beehive/IMG_20240607_231646_preview.jpeg" alt="" style="width: 80%; height:auto;" /></p>
+
+<h5 id="gateway-device-esp32-and-sim7000g-devboards-solar-charge-controller-battery-and-some-other-parts-you-shouldnt-pay-attention-to"><em>Gateway device: ESP32 and SIM7000G devboards, solar charge controller, battery and some other parts you shouldn’t pay attention to</em></h5>
+
+<p>The main purpose of this embedded device is to provide communication between the smart sensor and the server.
+Gateway is based on the combination of an ESP-WROOM-32 and a SIM7000G Mobile network modem chip.</p>
+
+<p>Gateway device’s functions are:</p>
+<ul>
+  <li>System management (station keeping):
+    <ul>
+      <li>Measure voltages on battery and solar panel</li>
+      <li>Switch sensor supply line voltage on/off</li>
+      <li>Measure temperatures of battery and charge controller heat sink</li>
+      <li>Check communication with SIM7000G chip (UART, with AT commands)</li>
+      <li>Read status of SIM7000G chip - precise GPS time and position, mobile network RSSI and number of GNSS satellites and their signal quality</li>
+      <li>Control sleep and low power mode</li>
+    </ul>
+  </li>
+  <li>Sensor data acquisition:
+    <ul>
+      <li>Send poll message to Smart sensor with specific address</li>
+      <li>Receive measurements from Smart sensors, check that values are reasonable, and format them to create a JSON measurements object</li>
+      <li>Add additional meta information related to RS485 communication quality and sensor presence (e.g. sensor did not respond, faulty CRC or at least one sensor reading is out of expected range)</li>
+    </ul>
+  </li>
+  <li>Communicate with server:
+    <ul>
+      <li>Use one of two methods to connect to the internet, either via SIM7000G using 4G/LTE mobile network or using the ESP32’s onboard Wi-Fi</li>
+      <li>Send JSON system information to server</li>
+      <li>Send JSON sensor measurements to server</li>
+    </ul>
+  </li>
+</ul>
+
+<blockquote>
+  <p>The two network interfaces can be set up as primary and backup, to e.g. only use mobile data when Wi-Fi is down.
+The data is sent to server using either MQTT(to Mosquitto or other broker) or directly using Homeassistant’s Websoceket interface. I’ve also done some similar projects with REST API, this is supported by Homeassistant out of the box, so the upside of REST is that there is no need to install any custom integrations. Downside however is that it is a fixed structure, only the entity state can be changed and it is significantly slower than websoceket which can transfer multiple key values in a single websoc frame</p>
+</blockquote>
+
+<p><img src="/assets/images/post-iot-beehive/DSC_0074.JPG" alt="" style="width: 80%; height:auto;" /></p>
+
+<h5 id="gateway-device-in-its-case-with-transparent-lid-to-show-off-my-mad-pcb-design-skills"><em>Gateway device in it’s case with transparent lid, to show off my mad PCB design skills</em></h5>
+
+<p><img src="/assets/images/post-iot-beehive/IMG_20230923_174040_preview.jpeg" alt="" style="width: 80%; height:auto;" /></p>
+
+<h5 id="gateway-device-on-site-with-a-seriously-oversized-solar-panel-for-the-system"><em>Gateway device: On-site with a seriously oversized solar panel for the system</em></h5>
+
+<p>The Smart hive system can be solar powered, this setup worked okay-ish, though it was not a very successful implementation. The Smart hive system needs around a 30W solar panel to function (conservatively 10W, depends on the sampling interval and number of sensors connected). Note that the panel shown here is a 200W panel because smaller panels are harder and more expensive to get. This version uses a lead-acid gel battery 12V, 7Ah which is enough for 3-4 rainy days.</p>
+
+<blockquote>
+  <p>Lead-acid is not ideal, used it because I had the parts, but it eventually got fully discharged and did not survive the winter.</p>
+</blockquote>
+
+<p>Turns out battery power is a deep rabbit hole, both the electronics and the code need to be optimized for low power operation. ESP32 has a fairly good system with multiple low power modes and is pretty easy to use. Actually ESP32 is comparatively bad at low power, at least the older versions, but it would be more than sufficent for a system like this. This device needs to wake up periodically and communicate with the server which obviously will use comparatively a lot of power.</p>
+
+<blockquote>
+  <p>To give an idea, I made an ESP32-C3 room sensor that last around a week on a single charged 18650 lithium cell, with 5 minute periodic measurements without too much effort - just a medium range 3V3 regulator and short awake between long sleep periods.
+I’m planning some more well thought out projects related to this topic, <code class="language-plaintext highlighter-rouge">TODO:</code> make a device to evaluate small current IOT devices and charger circuit efficency or battery capacity?</p>
+</blockquote>
+
+<p><img src="/assets/images/post-iot-beehive/sim7000g.JPG" alt="" style="width: 80%; height:auto;" /></p>
+
+<h5 id="sim7000g-dev-board"><em>SIM7000G dev board</em></h5>
+
+<p>The SIM7000G is an embedded device in itself, it has it’s own microcontroller running a very complex firmware to execute the logic needed to communicate via the mobile network, it can send and receive data and supports a variety of protocols such as NTP,HTTP,TCP,UDP and MQTT. Communicates with the ESP using AT commands, there is huge list of these commands and it enables the user to use all functions of the SIM device (Come to think of it the chip probably has some other interface like RMII + MDIO? But my devboard only has the UART pins routed). This SIM device also has a built in GNSS/GPS reciever which is handy for getting positioning information like lat, lon, MASL and to get precise time.</p>
+
+<blockquote>
+  <p>This GPS time is used for the smart hive system as it is easier to get and more precise than NTP, GPS position could be very usefull as some hives are placed on trailers or trucks and get moved multiple times a year.</p>
+</blockquote>
+
+<h3 id="choose-your-sim-chip">Choose your SIM chip</h3>
+
+<p>Something to watch out for before choosing SIM module is the manufacturer’s documentation, choose wisely as you will be on your own, most likely only a handful of appnotes and no existing library, because the AT commands differ widely between manufacturers and even versions of chips. The firmware is hard to find and harder to flash, manufacturer’s forums or support is barely available even for engineers working for huge paying customers (I’m generalizing here, don’t have experience with SIMCOM support, the docs are okay I guess, could be better).</p>
+
+<p>One issue I ran into is that: With prepaid sim cards, the user might want to know the remaining funds on the card, but USSD codes are not working on my specific firmware for the SIM7000G, so this idea was dropped.</p>
+
+<blockquote>
+  <p>Current implementation will politely inform the user of insufficient funds on the card by strategically stopping all data flow to the server and promptly becoming unreachable.</p>
+</blockquote>
+
+<p>For the hobbyist, when mobile connection is required by the project my advice would be to design the system around an existing devboard that has a network chip. There exists a few versions of the <a href="https://www.aliexpress.com/item/1005001705250713.html">TTGO</a> boards which use basically the same setup as this Gateway device ESP + SIMCOM, and they seem to be very popular and well supported, they are definitely pricy around 20 to 50Eur but this is an investment into your mental health, so well worth it.</p>
+
+<p>One more thing to consider when using mobile networks,</p>
+
+<blockquote>
+  <p>SIM cards are an absolute pain in the backend</p>
+</blockquote>
+
+<p>Depending on country it might be in the range of moderately complicated to impossible to get NB-IOT cards without a registered company, at least x number of units and a contract/payment plan for at least a year. Both Regular contract sims and prepaid sims need to be registered and activated with a face picture/ ID (for reasons?) which adds a lot of extra work to deploying a unit. Cards are also very expensive when talking about IOT devices. Any system that has a sim card will need maintenance and only get (based on my experience) more expensive and more convoluted to use over time for some reason (I of course blame the government for this, as one does).</p>
+
+<h2 id="server-side">Server side</h2>
+
+<p>Server is running on a Ubuntu mini-PC, all software is installed in docker environment (with docker-compose of course).
+On a good day it is running:</p>
+<ul>
+  <li>Homeassistant - the main backend/ I also use it for other sensors and smart home stuff</li>
+  <li>Grafana - Nice graphs</li>
+  <li>Influx-db</li>
+  <li>Mosquitto - MQTT broker</li>
+  <li>Cloudflared-tunnel</li>
+</ul>
+
+<blockquote>
+  <p>Cloudflared: my internet connection recently has been upgraded with a complementary CGNAT firewall, so that my ISP can save some money on IPV4 addresses - breaking my smart hive system, and also making the MQTT data transfer impossible. This cloudeflare tunnel is basically a free (at least for now) version of vpn-tunnel, that allows me to reach local HTTP ports from the internet. For regular non-CGNAT networks I would recommend <a href="https://hub.docker.com/r/linuxserver/duckdns">Duck-DNS</a>, ISP’s DDNS or Ol’ reliable static IP.</p>
+</blockquote>
+
+<p>With this system, the measurements are stored inside Homeassistant, if the beekeeper has an existing Homeassistant server it can be easily expanded with the smart hive sensors. As mentioned, the system uses either MQTT or Websocket to transmit data to Homeassistant, those frames contain the so called service data (the payload) as a JSON object, when the frame is received a HA integration is triggered to process the incoming data and update the entities inside HA - In this case this is done in a Custom Integration that is basically a python backend. This code will read and parse the json object, and create or modify entities (tags/sensors) inside HA.</p>
+
+<h3 id="a-little-digression-about-using-websockets-and-clustering-different-entities-together">A little digression about using Websockets and clustering different entities together</h3>
+
+<p>Using this type of backend, the payload is basically freeform and can be changed, or the integration can be expanded to support different formats. e.g. with my websocket Custom integration the following endpoints are available:</p>
+<ul>
+  <li>create entity</li>
+  <li>set/update entity</li>
+  <li>set multiple values with key-value pairs</li>
+</ul>
+
+<p>The first two could easily be done using <a href="https://developers.home-assistant.io/docs/api/rest/">REST</a> without modifying the HA instance or installing any new integrations.
+The third one however proved very useful for cutting down on repeating data such as headers, HA domain and sensor labels and websoc message IDs. If the only parameter that needs updating is state of the entity, it is more efficient to send multiple entities in the same websoc frame as key-value paris.</p>
+
+<blockquote>
+  <p>Why bother with this optimisation?</p>
+</blockquote>
+
+<p>Well sending these entities via REST one by one actually makes the whole system more expensive, in a little part because of network usage but mostly because of power usage. 
+The more we can cut down the time spent communicating, the faster our sensor can switch back to deep sleep, which will in turn lead to</p>
+
+<p>smaller power usage -&gt; smaller battery -&gt; less expensive system</p>
+
+<p>or at the very least system with improved power usage. In practice using this trick, the transmission time can be cut from around 10secs to 3-5secs.</p>
+
+<p><code class="language-plaintext highlighter-rouge">TODO:</code> One more idea would be to cluster measurements taken at different times together and combine them into a single websoc frame, then reconstruct them and add them to HA history database with their specific order/measurement time in mind. This sounds very promising to me, as you could get data with e.g. 1 minute period at the end of each hour (basically 60 samples for the power usage of a single sample) although the downside is that it wouldn’t be real time update, but for most cases this would work well enough.</p>
+
+<p><img src="/assets/images/post-iot-beehive/mob_dashboard_smart_hive.png" alt="" style="width: 80%; height:auto;" /></p>
+
+<h5 id="measurement-can-be-monitored-using-the-homeassistant-app"><em>Measurement can be monitored using the Homeassistant app</em></h5>
+
+<p><img src="/assets/images/post-iot-beehive/grafana_dashboar_hive.png" alt="" style="width: 80%; height:auto;" /></p>
+
+<h5 id="grafana-dashboard-for-displaying-trends-historical-data-and-better-nicer-visualizations"><em>Grafana dashboard for displaying trends, historical data and better nicer visualizations</em></h5>
+
+<h2 id="measurements-from-the-hives">Measurements from the hives</h2>
+
+<blockquote>
+  <p>Disclaimer: I am no beekeeper, know very little about bees</p>
+</blockquote>
+
+<h3 id="detecting-swarming-events-based-on-hive-temperature">Detecting swarming events based on hive temperature?</h3>
+
+<p>I’d like to show you this graph that was recorded summer to fall inside a young/ weaker colony:</p>
+
+<p>The graph shows the daily minimum and maximum temperature recorded from DHT temperature probes that are placed inside two different hive boxes next to each other, measuring the temperuture between the hive’s frames. Let’s call them “Blue” (t0) and “White” (t1) colonies (based on DHT sensor color). The ambient temperature is also displayed, although maximum daily value is hidden as it is not interesting.</p>
+
+<p>Bees have a characteristic behaviour called “swarming”, swarming means that the colony leaves the hive box behind either because there are too many queen bees inside a single box and they want to split the colony, or because the conditions inside the hive box are unfavorable for the colony. Either way the bees leave the hive box in large groups and try to find a new suitable home. In this case unfortunatelly it is the latter case, the colony was too weak to keep the hive box running, so they decided to abandon ship - this moment was recorded by the smart hive sensors on this graph.</p>
+
+<blockquote>
+  <p>Can you tell which hive box had the swarm event based on temperature readings?</p>
+</blockquote>
+
+<p><img src="/assets/images/post-iot-beehive/Hive_temp_and_ambient_temp_graph.png" alt="" style="width: 150%; height:auto;" /></p>
+
+<h5 id="daily-minum-and-maximum-temperatures-recorced-inside-blue-hive-white-hive--ambient-temperature"><em>Daily minum and maximum temperatures recorced inside Blue hive, White Hive + Ambient temperature</em></h5>
+
+<p>Hint: The difference is visible in minimum peek temperature compared to minimum peek ambient temperature.</p>
+
+<p>The left side of the graph clearly shows that the minimum daily temperatures inside the two boxes are approximately the same, while ambient temperature is lower. While on the right side, one of the boxes keeps this temperature differentce, but the other one shows the same approximate temperature as the outside ambient temperature sensor, based on this we can tell that “Blue” hive box is empty.</p>
+
+<h3 id="measured-relative-and-absolute-humidity">Measured relative and absolute humidity?</h3>
+
+<p><img src="/assets/images/post-iot-beehive/relative_humitdity.png" alt="" style="width: 150%; height:auto;" /></p>
+
+<h5 id="daily-relative-humidity-recorded-inside-blue-hive-white-hive--ambient"><em>Daily relative humidity recorded inside Blue hive, White Hive + Ambient</em></h5>
+
+<p>There is a difference on the right side of the graph between blue and white colonies (as the blue box is empty), but I can only speculate if the difference in humidity is caused by the swarming, or the swarming is caused by the deviation in humidity? I do not know enough about bees to tell.</p>
+
+<p><img src="/assets/images/post-iot-beehive/absolute_humidity.png" alt="" style="width: 150%; height:auto;" /></p>
+
+<h5 id="absolute-humidity-note-the-precipitation-is-on-the-outside"><em>Absolute humidity, Note: the precipitation is on the outside</em></h5>
+
+<blockquote>
+  <p>when absolute humidity and the saturation humidity lines meet, that signals precipitation either heavy rain or fog</p>
+</blockquote>
+
+<h3 id="testing-the-scale">Testing the scale</h3>
+
+<p>This system includes a scale for measuring hive weight, but for the time being it is being tested with a constant mass simulator (a bunch of bricks), because it would have been too invasive to build a new platform and move the hive boxes.
+These weight sensors are using strain gauges connected in a Wheatstone bridge circuit and a high gain amplifier + ADC circuit. The question is if this sensor can reliably measure the weight of the hive boxes for a long period, the two concerns were:</p>
+<ul>
+  <li>Temperature swings effect the sensor - this is true but depending on the application it is not that significant, the Wheatstone bridge cancels out most of the change.</li>
+  <li>Tare error - These weight sensors are designed to be tared (calibrated without weight) before each measurement. This is not possible with the hive boxes placed on the scale. Interestingly the measurements did not seem to record change caused by this effect over time, maybe because the test weight is too small.</li>
+</ul>
+
+<p><img src="/assets/images/post-iot-beehive/scale.png" alt="" style="width: 150%; height:auto;" /></p>
+
+<h5 id="scale-measurements-note-that-while-the-timescale-is-the-same-as-other-measurements-this-is-measuring-constant-weight-not-any-of-the-the-hive-boxes">Scale measurements, note that while the timescale is the same as other measurements, this is measuring constant weight, not any of the the hive boxes</h5>
+
+<p>Blue line is weight measured in gramms, while the black line is the temperature of the sensor. The visible disturbance at the right side of the graph is rainwater flooding the sensor, so let’s say that is expected and just ignore it.</p>
+
+<p><img src="/assets/images/post-iot-beehive/constant_weight_sensor_fluctuation.png" alt="" style="width: 150%; height:auto;" /></p>
+
+<h5 id="weight-measurement-fluctuations-caused-by-temperature-change">Weight measurement fluctuations caused by temperature change</h5>
+
+<p>The measured value seem to changed based on temperature and humidity. Using an additional temperature sensor measuring the temperature of the amplifier board can help correct out the swings (this works a little bit, tested it), but it is probably more beneficial to just buy better quality strain gauges and better quality amplifier board.
+The easiest workaround for this is to just average out a whole day of measurements, or take measurement only when temperature is in the middle range - This would work as the hive weight does not change significantly in a single day, and long term trends are more interesting.</p>
+
+<p><code class="language-plaintext highlighter-rouge">TODO:</code> Could bee activity be measured with a precise enough scale? (instead of a bee counter), Could the number of bees be estimated based on change in hive weight in a 24hour period? I would love to have <a href="https://www.youtube.com/watch?v=hnvtstq3ztI">this</a> scale to measure each bee. With some back of the napkin math, I’d say that a standard single height LR box contains around 1000 gramms of bees, which could be measured.</p>
+
+<details><summary>(based on this textbook)</summary>
+
+*dr Nada Plavša, dr Nebojša Nedić - PRAKTIKUM IZ PČELARSTVA*
+*2. ANATOMIJA MEDONOSNE PČELE* - str br. 15
+
+U pčelinjem društvu razlikujemo maticu, pčele radilice i trutove.
+Radilica je najmanji član pčelinje porodice i dužina tela joj je oko 12 mm, a
+masa oko 0,1 g. Matica se razlikuje po izduženom telu, krilima koja dosežu do
+polovine tela i manjom glavom u odnosu na pčele radilice i trutove. Jedina je
+reproduktivno sposobna ženka u pčelinjem društvu. Doseže dužinu od 20 do 25
+mm i ima masu od oko 0,2 g.
+
+*dr Nada Plavša, dr Nebojša Nedić - PRAKTIKUM IZ PČELARSTVA*
+*1.2.6. Jačina pčelinjeg društva* - str. 11
+
+Preporuka za jačinu pčelinjih društava koja se koriste u oprašivanju
+može da varira jer ona mogu brojiti do 60.000 pčela. Na jednoj strani
+standardnog rama iz Langstrot Rut košnice (LR) površine 880 cm2 može biti do
+1100 gusto zbijenih pčela. Računa se da na jednom cm2 može biti 4 odrasle
+pčele. Kod Dadant Blatove košnice (DB) na jednoj strani rama površine 1130
+cm2 može biti do 1400 gusto zbijenih pčela, a na jednom cm2 mogu biti 4
+odrasle pčele (Delaplane i sar., 2013)
+
+</details>
+
+<p>0,1g per bee * 1100 bees per frame * 10 frames = 1100g</p>
+
+<h3 id="just-a-regular-measurement">Just a regular measurement</h3>
+
+<p><img src="/assets/images/post-iot-beehive/hive_measurements_week.png" alt="" style="width: 150%; height:auto;" /></p>
+
+<h5 id="measurements-during-a-shorter-period">Measurements during a shorter period</h5>
+
+<p>This is what a beekeeper sees most of the time, values are mostly stable and in expected ranges. The right side shows measurements during a rainy period.</p>
+
+<h3 id="in-conclusion">In conclusion</h3>
+
+<p>This was a fun project and definitely has a lot of room for improvements, other projects tangentially related. I’ll need to be more careful with scope creep, this massive project gave me a lot of opportunities to research different topics that did not contribute to this project’s goals in the end. The project architecture is too complex (needs more KISS).</p>
+
+<p>The data collected would be much more useful when analyzed by a person who is experienced in the field of beekeeping, but the conclusion is that this and similar systems can be a very useful tool to help beekeepers and improve the lives of the bees.</p>]]></content><author><name>fFlori4n</name></author><category term="IoT" /><category term="Beehive" /><category term="Sensor-System" /><category term="Mobile-Network" /><category term="MQTT" /><category term="Solar" /><category term="ESP-WROOM-32" /><category term="Atmega168" /><summary type="html"><![CDATA[Made for my master’s thesis, the purpose of this smart hive system is to collect sensor data from remote beehives. The system consists of multiple embedded devices. The system can function On-or Off grid, it can use 4G/LTE or WiFi to send data to a remote server. The sensors are monitoring temperature, humidity inside the hives, outside weather conditions, has a scale connected to measure hive weight (though this one is only a prototype to test the sensor), motion sensor and GPS position. These measurements provide information that can be monitored in real time by the beekeeper, or analyzed at a later date to evaluate environmental effects to the individual colonies of bees.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/images/post-iot-beehive/IMG_20240911_165215_preview.jpeg" /><media:content medium="image" url="/assets/images/post-iot-beehive/IMG_20240911_165215_preview.jpeg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Sdrberry - Monitoring VHF/UHF traffic with Raspberry Pi and SDR receiver</title><link href="/2026/02/20/rtlsdrberry.html" rel="alternate" type="text/html" title="Sdrberry - Monitoring VHF/UHF traffic with Raspberry Pi and SDR receiver" /><published>2026-02-20T00:00:00+01:00</published><updated>2026-02-20T00:00:00+01:00</updated><id>/2026/02/20/rtlsdrberry</id><content type="html" xml:base="/2026/02/20/rtlsdrberry.html"><![CDATA[<p>404: Not Found</p>]]></content><author><name>fFlori4n</name></author><category term="Software-Defined-Radio" /><category term="UHF" /><category term="VHF" /><category term="rtl_airband" /><category term="SDR" /><category term="RPI-Zero" /><summary type="html"><![CDATA[404: Not Found]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/images/post-rtlsdrberry/IMG_20251212_002425_preview.png" /><media:content medium="image" url="/assets/images/post-rtlsdrberry/IMG_20251212_002425_preview.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Self-source Voron Trident 250 build - in pictures</title><link href="/2025/12/01/trident-build.html" rel="alternate" type="text/html" title="Self-source Voron Trident 250 build - in pictures" /><published>2025-12-01T00:00:00+01:00</published><updated>2025-12-01T00:00:00+01:00</updated><id>/2025/12/01/trident-build</id><content type="html" xml:base="/2025/12/01/trident-build.html"><![CDATA[<p>This self source Voron Trident build was cobbled together from an old Anet A8 (actually my first printer back from 2016) and my Ender 3V2, sacrificing these two, the aim was to transplant each printer’s machine spirit to get a hybrid machine that is fiery, indestructible and just won’t quit like an Anet A8, but also infinitely moddable, (fast AND cheap AND good) with questionable design choices like an Ender 3.</p>
+
+<p>The main features are the tri-gantry bed, the hallmark of the trident; Cool mainboard and toolhead that use CAN, Stylish industrial looking front panel with tactile switches and “build in” electrostatic air scrubber based on an IKEA förnuftig.</p>
+
+<p>The toolhead uses parts from a Creality Sprite Pro + an EBB42 CAN board - I call it the Spriteburner - this is only V1 and might get it’s very own blog post, still thinking how to add a filament cutter into the mix.</p>
+
+<p>Since this project is mostly based on the trident itself, I will not give too many details, just some pictures of the build.</p>
+
+<blockquote>
+  <p>!All parts of this build are acquired legally, do not replicate anything seen on pictures, danger of fire and electrocution and more fire, and a little bit of finger pinching!</p>
+</blockquote>
+
+<h3 id="how-it-started">How it started…</h3>
+
+<p><img src="/assets/images/post-trident-build/IMG_20250817_191954.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20230913_222412.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20220417_191212.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20230914_223903.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20250105_144453.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251001_205224.jpg" alt="" style="width: 49%; height:auto;" /></p>
+
+<h3 id="and-how-its-going">And how it’s going…</h3>
+<p><img src="/assets/images/post-trident-build/IMG_20250827_171733.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20250827_171722.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20250827_171921.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20250827_224433.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20250830_224831.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20250830_224936.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20250926_004812.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20250927_144312.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251001_205245.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251001_205251.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251010_173206.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251012_152407.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251012_185043.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251014_173615.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251108_204221.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251109_234022.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251121_174532.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251121_174555.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251122_222419.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251124_182652.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251124_182714.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251124_214940.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251130_233044.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251202_214617.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251205_200806.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251207_002330.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251211_213759.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251211_233758.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251213_020859.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251213_020824.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20251220_003130_1.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20260210_233354.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20260210_232801.jpg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-trident-build/IMG_20260210_232733.jpg" alt="" style="width: 49%; height:auto;" /></p>]]></content><author><name>fFlori4n</name></author><category term="Voron" /><category term="Trident" /><category term="3D-printer" /><category term="CAN" /><category term="BTT-Octopus" /><category term="EBB42" /><category term="Raspberry-Pi" /><category term="Klipper" /><summary type="html"><![CDATA[This self source Voron Trident build was cobbled together from an old Anet A8 (actually my first printer back from 2016) and my Ender 3V2, sacrificing these two, the aim was to transplant each printer’s machine spirit to get a hybrid machine that is fiery, indestructible and just won’t quit like an Anet A8, but also infinitely moddable, (fast AND cheap AND good) with questionable design choices like an Ender 3.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/images/post-trident-build/IMG_20251124_182714.jpg" /><media:content medium="image" url="/assets/images/post-trident-build/IMG_20251124_182714.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">nod3-comfirm - Common firmware for ESP32 based devices</title><link href="/2025/08/03/nod3-comfirm.html" rel="alternate" type="text/html" title="nod3-comfirm - Common firmware for ESP32 based devices" /><published>2025-08-03T00:00:00+02:00</published><updated>2025-08-03T00:00:00+02:00</updated><id>/2025/08/03/nod3-comfirm</id><content type="html" xml:base="/2025/08/03/nod3-comfirm.html"><![CDATA[<p><strong>nod3-comfirm</strong> - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3.
 Using ESP_IDF and modern(ish) C++ ( <em>to avoid the usual cowboy enthics of C projects ~ though it is less efficient</em> ), nod3-comfirm aims to be used as a basic firmware for smart sensor devices. Firmware has basic functions that are needed for every IoT thing, like:</p>
 <ul>
   <li>Network management (WLAN)</li>
@@ -12,69 +498,17 @@ Using ESP_IDF and modern(ish) C++ ( <em>to avoid the usual cowboy enthics of C p
 
 <p><strong>nod3</strong> can be modified to taylor it to the specific project, add support for new sensors, or other application specific functions.</p>
 
-<p><img src="http://192.168.0.199:3000/d/detfu7jht6r5sb/hive-scale-test?orgId=1&amp;viewPanel=1" /></p>
-
-<p>| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 | Linux |
-| —————– | —– | ——– | ——– | ——– | ——– | ——— | ——– | ——– | ——– | ——– | —– |</p>
-
-<h1 id="hello-world-example">Hello World Example</h1>
-
-<p>Starts a FreeRTOS task to print “Hello World”.</p>
-
-<p>(See the README.md file in the upper level ‘examples’ directory for more information about examples.)</p>
-
-<h2 id="how-to-use-example">How to use example</h2>
-
-<p>Follow detailed instructions provided specifically for this example.</p>
-
-<p>Select the instructions depending on Espressif chip installed on your development board:</p>
-
-<ul>
-  <li><a href="https://docs.espressif.com/projects/esp-idf/en/stable/get-started/index.html">ESP32 Getting Started Guide</a></li>
-  <li><a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html">ESP32-S2 Getting Started Guide</a></li>
-</ul>
-
-<h2 id="example-folder-contents">Example folder contents</h2>
-
-<p>The project <strong>hello_world</strong> contains one source file in C language <a href="main/hello_world_main.c">hello_world_main.c</a>. The file is located in folder <a href="main">main</a>.</p>
-
-<p>ESP-IDF projects are built using CMake. The project build configuration is contained in <code class="language-plaintext highlighter-rouge">CMakeLists.txt</code> files that provide set of directives and instructions describing the project’s source files and targets (executable, library, or both).</p>
-
-<p>Below is short explanation of remaining files in the project folder.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>├── CMakeLists.txt
-├── pytest_hello_world.py      Python script used for automated testing
-├── main
-│   ├── CMakeLists.txt
-│   └── hello_world_main.c
-└── README.md                  This is the file you are currently reading
-</code></pre></div></div>
-
-<p>For more information on structure and contents of ESP-IDF projects, please refer to Section <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html">Build System</a> of the ESP-IDF Programming Guide.</p>
-
-<h2 id="troubleshooting">Troubleshooting</h2>
-
-<ul>
-  <li>
-    <p>Program upload failure</p>
-
-    <ul>
-      <li>Hardware connection is not correct: run <code class="language-plaintext highlighter-rouge">idf.py -p PORT monitor</code>, and reboot your board to see if there are any output logs.</li>
-      <li>The baud rate for downloading is too high: lower your baud rate in the <code class="language-plaintext highlighter-rouge">menuconfig</code> menu, and try again.</li>
-    </ul>
-  </li>
-</ul>
-
-<h2 id="technical-support-and-feedback">Technical support and feedback</h2>
-
-<p>Please use the following feedback channels:</p>
-
-<ul>
-  <li>For technical queries, go to the <a href="https://esp32.com/">esp32.com</a> forum</li>
-  <li>For a feature request or bug report, create a <a href="https://github.com/espressif/esp-idf/issues">GitHub issue</a></li>
-</ul>
-
-<p>We will get back to you as soon as possible.</p>]]></content><author><name>fFlori4n</name></author><category term="ESP-IDF" /><category term="ESP32-C3" /><category term="C++" /><category term="IoT" /><summary type="html"><![CDATA[nod3-comfirm - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3. Using ESP_IDF and modern(ish) C++ ( to avoid the usual cowboy enthics of C projects ~ though it is less efficient ), nod3-comfirm aims to be used as a basic firmware for smart sensor devices. Firmware has basic functions that are needed for every IoT thing, like: Network management (WLAN) IO Control ADC continous/ DMA and other ADC functions Time keeping, NTP and RTC functions Websocket communication with Homeassistant custom component libraries for common sensors using I2C]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/image_1.jpg" /><media:content medium="image" url="http://localhost:4000/assets/images/image_1.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Prosthetic hand - 3d printed partial prosthetic</title><link href="http://localhost:4000/2025/01/20/prosthetic-hand.html" rel="alternate" type="text/html" title="Prosthetic hand - 3d printed partial prosthetic" /><published>2025-01-20T00:00:00+01:00</published><updated>2025-01-20T00:00:00+01:00</updated><id>http://localhost:4000/2025/01/20/prosthetic-hand</id><content type="html" xml:base="http://localhost:4000/2025/01/20/prosthetic-hand.html"><![CDATA[<p>This is an RnD project, working with a team of three other engineers. Our goal is to develop a prototype for a partial hand prosthetic that can be 3D printed and built with basic hobbyist level parts. This design unlike other prosthetics, is a partial prosthetic, meaning it is worn on the wrist, and tries to replicate the function of the four ‘axial’ fingers - the main mechanical constraint is space as all mechanisms need to clear the hand and the thumb. A custom PCB with an STM chip is responsible for controlling the motors, with force and positioning feedback.</p>
+<p><img src="/assets/images/post-nod3comfirm/IMG_20250612_191400_preview.jpeg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-nod3comfirm/IMG_20250619_172229_preview.jpeg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-nod3comfirm/IMG_20250513_223343_preview.jpeg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-nod3comfirm/IMG_20250427_013347_preview.jpeg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-nod3comfirm/IMG_20250427_013503_preview.jpeg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-nod3comfirm/IMG_20240616_200126_preview.jpeg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-nod3comfirm/IMG_20240325_234548_preview.jpeg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-nod3comfirm/IMG_20240617_194040_preview.jpeg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-nod3comfirm/IMG_20241022_184502_preview.jpeg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-nod3comfirm/IMG_20241023_191640_preview.jpeg" alt="" style="width: 49%; height:auto;" />
+<img src="/assets/images/post-nod3comfirm/IMG_20241004_181505_preview.jpeg" alt="" style="width: 49%; height:auto;" /></p>]]></content><author><name>fFlori4n</name></author><category term="ESP-IDF" /><category term="ESP32-C3" /><category term="C++" /><category term="IoT" /><summary type="html"><![CDATA[nod3-comfirm - is an ESP_IDF based firmware intended to be used as a template/ starting point for future IoT projects. It is primarily written for ESP C3. Using ESP_IDF and modern(ish) C++ ( to avoid the usual cowboy enthics of C projects ~ though it is less efficient ), nod3-comfirm aims to be used as a basic firmware for smart sensor devices. Firmware has basic functions that are needed for every IoT thing, like: Network management (WLAN) IO Control ADC continous/ DMA and other ADC functions Time keeping, NTP and RTC functions Websocket communication with Homeassistant custom component libraries for common sensors using I2C]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/images/post-nod3comfirm/IMG_20250617_205827.png" /><media:content medium="image" url="/assets/images/post-nod3comfirm/IMG_20250617_205827.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Prosthetic hand - 3d printed partial prosthetic</title><link href="/2025/01/20/prosthetic-hand.html" rel="alternate" type="text/html" title="Prosthetic hand - 3d printed partial prosthetic" /><published>2025-01-20T00:00:00+01:00</published><updated>2025-01-20T00:00:00+01:00</updated><id>/2025/01/20/prosthetic-hand</id><content type="html" xml:base="/2025/01/20/prosthetic-hand.html"><![CDATA[<p>This is an RnD project, working with a team of three other engineers. Our goal is to develop a prototype for a partial hand prosthetic that can be 3D printed and built with basic hobbyist level parts. This design unlike other prosthetics, is a partial prosthetic, meaning it is worn on the wrist, and tries to replicate the function of the four ‘axial’ fingers - the main mechanical constraint is space as all mechanisms need to clear the hand and the thumb. A custom PCB with an STM chip is responsible for controlling the motors, with force and positioning feedback.</p>
 
 <p>The project details can be read in the git repo: <a href="http://github.com/AleksaHeler/OpenHand"> http://github.com/AleksaHeler/OpenHand </a> , there is a lot of stuff, and I mean <strong>a lot</strong>, definitely worth the read.</p>
 
@@ -139,7 +573,7 @@ Our assumption is that these motors could be custom made easily and cheaply, the
 <p><img src="https://github.com/fflori4n/fflori4n/raw/main/assets/pics/linear_motor.png" alt="" style="width: 100%; height:auto;" /></p>
 
 <p>The modifications to the motor (and the internals of these linear motors) are shared on grabcad:
-<a href="https://grabcad.com/library/geared-motor-with-encoder-for-linear-actuator-1"> https://grabcad.com/library/geared-motor-with-encoder-for-linear-actuator-1 </a></p>]]></content><author><name>fFlori4n</name></author><category term="Open-Hand" /><category term="Robotics" /><category term="Position-Feedback" /><summary type="html"><![CDATA[This is an RnD project, working with a team of three other engineers. Our goal is to develop a prototype for a partial hand prosthetic that can be 3D printed and built with basic hobbyist level parts. This design unlike other prosthetics, is a partial prosthetic, meaning it is worn on the wrist, and tries to replicate the function of the four ‘axial’ fingers - the main mechanical constraint is space as all mechanisms need to clear the hand and the thumb. A custom PCB with an STM chip is responsible for controlling the motors, with force and positioning feedback.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/post-prosthetic-hand/prostetic-hand-v08.jpg" /><media:content medium="image" url="http://localhost:4000/assets/images/post-prosthetic-hand/prostetic-hand-v08.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Plant detection for agricultural drone using OpenCV computer vision</title><link href="http://localhost:4000/2023/02/10/plant-mass-detection.html" rel="alternate" type="text/html" title="Plant detection for agricultural drone using OpenCV computer vision" /><published>2023-02-10T00:00:00+01:00</published><updated>2023-02-10T00:00:00+01:00</updated><id>http://localhost:4000/2023/02/10/plant-mass-detection</id><content type="html" xml:base="http://localhost:4000/2023/02/10/plant-mass-detection.html"><![CDATA[<p>R&amp;D project in collaboration with Drontech (<a href="https://www.facebook.com/dronteh">Drontech Facebook page</a>) to develop a proof of concept for a device that uses computer vision to estimate plant mass beneath a drone.
+<a href="https://grabcad.com/library/geared-motor-with-encoder-for-linear-actuator-1"> https://grabcad.com/library/geared-motor-with-encoder-for-linear-actuator-1 </a></p>]]></content><author><name>fFlori4n</name></author><category term="Open-Hand" /><category term="Robotics" /><category term="Position-Feedback" /><summary type="html"><![CDATA[This is an RnD project, working with a team of three other engineers. Our goal is to develop a prototype for a partial hand prosthetic that can be 3D printed and built with basic hobbyist level parts. This design unlike other prosthetics, is a partial prosthetic, meaning it is worn on the wrist, and tries to replicate the function of the four ‘axial’ fingers - the main mechanical constraint is space as all mechanisms need to clear the hand and the thumb. A custom PCB with an STM chip is responsible for controlling the motors, with force and positioning feedback.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/images/post-prosthetic-hand/prostetic-hand-v08.jpg" /><media:content medium="image" url="/assets/images/post-prosthetic-hand/prostetic-hand-v08.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Plant detection for agricultural drone using OpenCV computer vision</title><link href="/2023/02/10/plant-mass-detection.html" rel="alternate" type="text/html" title="Plant detection for agricultural drone using OpenCV computer vision" /><published>2023-02-10T00:00:00+01:00</published><updated>2023-02-10T00:00:00+01:00</updated><id>/2023/02/10/plant-mass-detection</id><content type="html" xml:base="/2023/02/10/plant-mass-detection.html"><![CDATA[<p>R&amp;D project in collaboration with Drontech (<a href="https://www.facebook.com/dronteh">Drontech Facebook page</a>) to develop a proof of concept for a device that uses computer vision to estimate plant mass beneath a drone.
 A GPIO pin is set to HIGH when plant mass exceeds a defined threshold, the signal is intended to control sprayer valves, turning off pesticide flow when the area under the flight path lacks viable cultivation or the plants have dried out, avoiding unnecessary pesticide use on unproductive areas.</p>
 
 <p><img src="https://github.com/fflori4n/fflori4n/raw/main/assets/pics/droneWGreenLed.png" alt="drone with cam device under it" style="width: 42.5%; height:auto;" /></p>
