@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Disallow build and system files
+Disallow: /_site/
+Disallow: /_layouts/
+Disallow: /_includes/
+Disallow: /_sass/
+Disallow: /_data/
+Disallow: /_plugins/
+
+# Sitemap
+Sitemap: https://fflori4n.com/sitemap.xml
