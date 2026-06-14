@@ -20,7 +20,7 @@ The tagline for my embedded goals would be something like:
 
 | *CONTACT ME @*: |  |
 |--|--|
-| Website | [fflori4n.com](https://fflori4n.com) |
+| Website | [fflori4n.com](http://fflori4n.com) |
 | Email | [fflori4n@gmail.com](mailto:fflori4n@gmail.com) |
 | Github | [github.com/fflori4n](https://github.com/fflori4n) |
 | Linkedin | [linkedin.com/in/fflori4n](https://www.linkedin.com/in/fflori4n) |
